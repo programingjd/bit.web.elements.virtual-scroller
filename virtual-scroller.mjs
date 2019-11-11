@@ -53,9 +53,7 @@ _layout(){
   console.log('layout');
   const count=this._count();
   if(count===0){
-    this._clones=[];
-    this._rowIndices=[];
-    this._window.innerHTML='';
+    while(this._clones.length>0) this._removeElement();
     return;
   }
   this.shadowRoot.host.style.height='100vh';
@@ -64,7 +62,11 @@ _layout(){
   const first=this._clones.length?this._clones[this._clones.length-1]:this._addElement();
   const rowHeight=this._rowHeight=this._heights(first).reduce((sum,cur)=>sum+cur,0);
   const viewportHeight=this.shadowRoot.host.getBoundingClientRect().height-heights[0]-heights[2];
-  const colCount=this._colCount=this._cols();
+  const colCount=this._cols();
+  if(colCount!==this._colCount){
+    this._colCount=colCount;
+    while(this._clones.length>0) this._removeElement();
+  }
   const itemCount=this._itemCount=this._count();
   const rowCount=this._rowCount=Math.ceil(itemCount/colCount);
   this._placeholder.style.height=`${rowCount*rowHeight}px`;
