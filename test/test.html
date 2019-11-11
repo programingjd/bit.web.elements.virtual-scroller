@@ -30,7 +30,11 @@ virtual-scroller{
   await import('../virtual-scroller.mjs');
   const virtualScroller=document.querySelector('virtual-scroller');
   virtualScroller.model={
-    count: 70
+    count: 70,
+    cols: 1,
+    render: (element, index, row, col)=>{
+      element.textContent=`Item ${index+1}, Row ${row+1}, Col ${col+1}`;
+    }
   };
 })();
 </script>

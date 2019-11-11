@@ -5,7 +5,7 @@ constructor(){
   this._window=this._placeholder=this._template=this._model=null;
   this._height=this._rowHeight=this._rowCount=this._itemCount=0;
   this._colCount=1;
-  this._clones=[];this._indices=[];
+  this._clones=[];this._rowIndices=[];
   this.attachShadow({mode:'open'}).innerHTML=`
 <style>
 :host{position:relative;display:block;overflow:auto}
@@ -54,7 +54,7 @@ _layout(){
   const count=this._count();
   if(count===0){
     this._clones=[];
-    this._indices=[];
+    this._rowIndices=[];
     this._window.innerHTML='';
     return;
   }
@@ -71,7 +71,7 @@ _layout(){
   const windowRowCount=Math.min(rowCount,Math.ceil(viewportHeight/rowHeight)*3);
   while(this._clones.length<windowRowCount*colCount) this._addElement();
   while(this._clones.length>windowRowCount*colCount) this._removeElement();
-  this._indices.fill(-1);
+  this._rowIndices.fill(-1);
   this.shadowRoot.host.style.height='auto';
   this.shadowRoot.host.style.overflow='auto';
   this._render();
@@ -89,19 +89,23 @@ _render(){
     --firstWindowRowIndex;
     offset-=rowHeight;
   }
+  const colCount=this._colCount;
   const rowCount=this._rowCount;
   const itemCount=this._itemCount;
   this._window.style.top=`${offset}px`;
+  const model=this._model;
+  const render=model.render||((el,i)=>el.textContent=`${i+1}`);
   this._clones.forEach((el,i)=>{
-    const index=i+firstWindowRowIndex;
+    const rowIndex=i+firstWindowRowIndex;
     if(i>itemCount){
       el.style.visibility='hidden';
-      this._indices[i]=-1;
+      this._rowIndices[i]=-1;
     }else{
       el.style.visibility='visible';
-      if(this._indices[i]!==index){
-        this._indices[i]=index;
-        el.textContent=`Row ${index+1}`;
+      if(this._rowIndices[i]!==rowIndex){
+        this._rowIndices[i]=rowIndex;
+        el.textContent=`Row ${rowIndex+1}`;
+        for(let i=0;i<colCount;++i) render(el,rowIndex*colCount+i,rowIndex,i);
       }
     }
   });
@@ -135,13 +139,13 @@ _addElement(){
     div.appendChild(el);
     this._clones.push(this.appendChild(div));
   }
-  this._indices.push(-1);
+  this._rowIndices.push(-1);
   return this._clones[this._clones.length-1];
 }
 
 _removeElement(){
   const el=this._clones.pop();
-  this._indices.pop();
+  this._rowIndices.pop();
   el.parentElement.removeChild(el);
 }
 
