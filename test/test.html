@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Test</title>
+<style>
+html{width:100%;height:100%;font:16px sans-serif;margin:0;padding:0;background:#444}
+body{min-width:100%;height:100%;padding:.5em;margin:0;background:#888;box-sizing:border-box}
+header,footer{background:rgba(0,255,0,.5);height:2em;display:flex;justify-content:center;align-items:center;color:#fff}
+.row{background:rgba(255,0,0,.5);height:2em;display:flex;justify-content:center;align-items:center}
+virtual-scroller{
+  margin:.5em;
+  padding:.5em;
+  box-sizing:border-box;
+  max-height:calc(100% - 1em);
+  background:rgba(0,0,0,.1);
+}
+</style>
+</head>
+<body>
+<virtual-scroller>
+  <header slot="header">Header</header>
+  <footer slot="footer">Footer</footer>
+  <template>
+    <div class="row content">Row</div>
+  </template>
+</virtual-scroller>
+<script>
+(async()=>{
+  await import('../virtual-scroller.mjs');
+  const virtualScroller=document.querySelector('virtual-scroller');
+  virtualScroller.model={
+    count: 70
+  };
+})();
+</script>
+</body>
+</html>
