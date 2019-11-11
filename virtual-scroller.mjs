@@ -40,7 +40,6 @@ connectedCallback(){
 set model(model){
   if(this._model!==model){
     this._model=model;
-    this._rowOffset=0;
   }
   if(this.isConnected) this._layout();
 }
@@ -53,26 +52,26 @@ _layout(){
   console.log('layout');
   const count=this._count();
   if(count===0){
-    while(this._clones.length>0) this._removeElement();
+    while(this._clones.length>0) this._removeRow();
     return;
   }
   this.shadowRoot.host.style.height='100vh';
   this.shadowRoot.host.style.overflow='hidden';
-  const heights=this._heights(this.shadowRoot.host);
-  const first=this._clones.length?this._clones[this._clones.length-1]:this._addElement();
-  const rowHeight=this._rowHeight=this._heights(first).reduce((sum,cur)=>sum+cur,0);
-  const viewportHeight=this.shadowRoot.host.getBoundingClientRect().height-heights[0]-heights[2];
   const colCount=this._cols();
+  const firstRow=this._clones.length?this._clones[this._clones.length-1]:this._addRow(colCount);
+  const rowHeight=this._rowHeight=this._heights(firstRow).reduce((sum,cur)=>sum+cur,0);
+  const heights=this._heights(this.shadowRoot.host);
+  const viewportHeight=this.shadowRoot.host.getBoundingClientRect().height-heights[0]-heights[2];
   if(colCount!==this._colCount){
     this._colCount=colCount;
-    while(this._clones.length>0) this._removeElement();
+    while(this._clones.length>0) this._removeRow();
   }
   const itemCount=this._itemCount=this._count();
   const rowCount=this._rowCount=Math.ceil(itemCount/colCount);
   this._placeholder.style.height=`${rowCount*rowHeight}px`;
   const windowRowCount=Math.min(rowCount,Math.ceil(viewportHeight/rowHeight)*3);
-  while(this._clones.length<windowRowCount*colCount) this._addElement();
-  while(this._clones.length>windowRowCount*colCount) this._removeElement();
+  while(this._clones.length<windowRowCount) this._addRow(colCount);
+  while(this._clones.length>windowRowCount) this._removeRow();
   this._rowIndices.fill(-1);
   this.shadowRoot.host.style.height='auto';
   this.shadowRoot.host.style.overflow='auto';
@@ -84,8 +83,7 @@ _render(){
   const scrollTop=this.scrollTop;
   const rowHeight=this._rowHeight;
   let offset=scrollTop-scrollTop%rowHeight;
-  const firstVisibleRowIndex=Math.trunc(scrollTop/rowHeight);
-  let firstWindowRowIndex=firstVisibleRowIndex;
+  let firstWindowRowIndex=Math.trunc(scrollTop/rowHeight);
   let max=this._clones.length/3;
   while(firstWindowRowIndex>0&&max-->0){
     --firstWindowRowIndex;
@@ -97,17 +95,28 @@ _render(){
   this._window.style.top=`${offset}px`;
   const model=this._model;
   const render=model.render||((el,i)=>el.textContent=`${i+1}`);
-  this._clones.forEach((el,i)=>{
+  this._clones.forEach((row,i)=>{
     const rowIndex=i+firstWindowRowIndex;
-    if(i>itemCount){
-      el.style.visibility='hidden';
+    if(i>rowCount){
+      row.style.visibility='hidden';
       this._rowIndices[i]=-1;
     }else{
-      el.style.visibility='visible';
+      row.style.visibility='visible';
       if(this._rowIndices[i]!==rowIndex){
         this._rowIndices[i]=rowIndex;
-        el.textContent=`Row ${rowIndex+1}`;
-        for(let i=0;i<colCount;++i) render(el,rowIndex*colCount+i,rowIndex,i);
+        if(colCount===1) render(row,rowIndex,rowIndex,0);
+        else{
+          const cells=row.children;
+          for(let colIndex=0; colIndex<colCount; ++colIndex){
+            const cell=cells.item(colIndex);
+            const itemIndex=rowIndex*colCount+colIndex;
+            if(itemIndex>itemCount) cell.style.visibility='hidden';
+            else{
+              cell.style.visibility='visible';
+              render(cell,itemIndex,rowIndex,colIndex);
+            }
+          }
+        }
       }
     }
   });
@@ -132,20 +141,34 @@ _heights(el){
   return [parseFloat(style.marginTop),parseFloat(style.height),parseFloat(style.marginBottom)];
 }
 
-_addElement(){
+_clone(){
   const el=document.importNode(this._template.content,true);
-  if(el.children.length===1){
-    this._clones.push(this.appendChild(el.children.item(0)));
-  }else{
-    const div=document.createElement('div');
-    div.appendChild(el);
-    this._clones.push(this.appendChild(div));
-  }
-  this._rowIndices.push(-1);
-  return this._clones[this._clones.length-1];
+  if(el.children.length===1) return el.children.item(0);
+  const div=document.createElement('div');
+  div.appendChild(el);
+  return div;
 }
 
-_removeElement(){
+_row(colCount){
+  if(colCount===1) return this._clone();
+  const div=document.createElement('div');
+  for(let i=0;i<colCount;++i){
+    div.appendChild(this._clone());
+  }
+  div.style.display='grid';
+  div.style.gridTemplateColumns='repeat(3,1fr)';
+  return div;
+}
+
+_addRow(colCount){
+  const row=this._row(colCount);
+  this.appendChild(row);
+  this._clones.push(row);
+  this._rowIndices.push(-1);
+  return row;
+}
+
+_removeRow(){
   const el=this._clones.pop();
   this._rowIndices.pop();
   el.parentElement.removeChild(el);

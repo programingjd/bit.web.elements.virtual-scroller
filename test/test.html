@@ -31,7 +31,7 @@ virtual-scroller{
   const virtualScroller=document.querySelector('virtual-scroller');
   virtualScroller.model={
     count: 7000,
-    cols: 1,
+    cols: 3,
     render: (element, index, row, col)=>{
       element.textContent=`Item ${index+1}, Row ${row+1}, Col ${col+1}`;
     }
