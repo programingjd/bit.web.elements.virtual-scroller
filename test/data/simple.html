@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Simple</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{width:100%;height:100%;font:24px sans-serif}
+body{width:100%;height:100%;background:#eee;color:#222}
+virtual-scroller{max-height:100%}
+.row{display:flex;height:2em;justify-content:center;align-items:center}
+</style>
+</head>
+<body>
+<virtual-scroller>
+  <template>
+    <div class="row"></div>
+  </template>
+</virtual-scroller>
+<script>
+(async()=>{
+  await import('/virtual-scroller.mjs');
+  const virtualScroller=document.querySelector('virtual-scroller');
+  virtualScroller.model={
+    count: 10000,
+    cols: 2,
+    render: (element, index, row, col)=>{
+      element.textContent=JSON.stringify({index:index,row:row,col:col});
+    }
+  };
+  document.body.classList.add('loaded');
+})();
+</script>
+</body>
+</html>

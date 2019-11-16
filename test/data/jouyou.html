@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Jouyou</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{width:100%;height:100%;font:24px sans-serif}
+body{width:100%;height:100%;background:#222;color:#aaa}
+virtual-scroller{max-height:100%}
+.row{display:block;height:128px;width:128px;justify-self:center}
+</style>
+</head>
+<body>
+<virtual-scroller>
+  <template>
+    <div class="row">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-375 -375 1750 1750">
+        <defs>
+          <path/>
+        </defs>
+        <g transform="translate(0,880) scale(1,-1)">
+          <use stroke="#aaa" stroke-width="320px" stroke-linejoin="round"/>
+          <use stroke="#333" stroke-width="288px" stroke-linejoin="round"/>
+          <use fill="#ccc"/>
+        </g>
+      </svg>
+    </div>
+  </template>
+</virtual-scroller>
+<script>
+(async()=>{
+  await import('/virtual-scroller.mjs');
+  const chars=await (await fetch('jouyou.json')).json();
+  const virtualScroller=document.querySelector('virtual-scroller');
+  virtualScroller.model={
+    count: ()=>chars.length,
+    cols: ()=>Math.trunc(virtualScroller.clientWidth/180),
+    render: (element, index, row, col)=>{
+      const id=`u${chars[index].code.charCodeAt(0).toString(16).padStart(4,'0')}`;
+      const path=element.querySelector('path');
+      path.setAttribute('id',id);
+      path.setAttribute('d',chars[index].d);
+      element.querySelectorAll('use').forEach(it=>it.setAttribute('href',`#${id}`));
+    }
+  };
+  document.body.classList.add('loaded');
+})();
+</script>
+</body>
+</html>

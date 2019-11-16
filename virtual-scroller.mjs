@@ -27,7 +27,7 @@ connectedCallback(){
   this._template=this.querySelector('template');
   if(!this._template){
     this._template=document.createElement('template');
-    this._template.innerHTML='<div>template</div>';
+    this._template.innerHTML='<div style="display:flex;height:1.5em;justify-content:center;align-items:center"></div>';
   }
   if(this._model) this._layout();
   this.shadowRoot.host.addEventListener('scroll',this._render.bind(this));
@@ -94,7 +94,7 @@ _render(){
   const itemCount=this._itemCount;
   this._window.style.top=`${offset}px`;
   const model=this._model;
-  const render=model.render||((el,i)=>el.textContent=`${i+1}`);
+  const render=model.render||(Array.isArray(model)?(el,i)=>el.textContent=model[i]:_=>{});
   this._clones.forEach((row,i)=>{
     const rowIndex=i+firstWindowRowIndex;
     if(i>rowCount){
@@ -156,7 +156,7 @@ _row(colCount){
     div.appendChild(this._clone());
   }
   div.style.display='grid';
-  div.style.gridTemplateColumns='repeat(3,1fr)';
+  div.style.gridTemplateColumns=`repeat(${colCount},1fr)`;
   return div;
 }
 
