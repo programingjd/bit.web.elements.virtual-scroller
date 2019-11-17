@@ -110,7 +110,7 @@ _render(){
           for(let colIndex=0; colIndex<colCount; ++colIndex){
             const cell=cells.item(colIndex);
             const itemIndex=rowIndex*colCount+colIndex;
-            if(itemIndex>itemCount) cell.style.visibility='hidden';
+            if(itemIndex>=itemCount) cell.style.visibility='hidden';
             else{
               cell.style.visibility='visible';
               render(cell,itemIndex,rowIndex,colIndex);
