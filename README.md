@@ -1,4 +1,4 @@
-[![Bit.dev package](https://img.shields.io/badge/%20bit%20-programingjd.node%2Fhandlers%2Fstatic-blueviolet)](https://bit.dev/programingjd/web/elements/virtual-scroller)
+[![Bit.dev package](https://img.shields.io/badge/%20bit%20-programingjd.web%2Felements%2Fvirtual-scroller-blueviolet)](https://bit.dev/programingjd/web/elements/virtual-scroller)
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/programingjd/bit.web.elements.virtual-scroller)](https://bit.dev/programingjd/web/elements/virtual-scroller)
 [![GitHub](https://img.shields.io/github/license/programingjd/bit.web.elements.virtual-scroller)](LICENSE)
 ![Travis (.org)](https://img.shields.io/travis/programingjd/bit.web.elements.virtual-scroller)
