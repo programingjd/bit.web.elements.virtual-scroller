@@ -145,6 +145,8 @@ _clone(){
   const el=document.importNode(this._template.content,true);
   if(el.children.length===1) return el.children.item(0);
   const div=document.createElement('div');
+  div.style.position='relative';
+  div.style.display='grid';
   div.appendChild(el);
   return div;
 }
@@ -155,6 +157,7 @@ _row(colCount){
   for(let i=0;i<colCount;++i){
     div.appendChild(this._clone());
   }
+  div.style.position='relative';
   div.style.display='grid';
   div.style.gridTemplateColumns=`repeat(${colCount},1fr)`;
   return div;

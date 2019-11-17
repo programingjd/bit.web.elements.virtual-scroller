@@ -8,7 +8,7 @@ const contentTypes = new Map([
   [ "json", "application/json" ]
 ]);
 
-const nyc = (()=>{
+const nyc = require.main === module ? false : (()=>{
   try{
     return !!fs.statSync(`${__dirname}/../.nyc/virtual-scroller.mjs`);
   }catch(_){
@@ -16,7 +16,7 @@ const nyc = (()=>{
   }
 })();
 
-console.log(nyc);
+if(nyc) console.log('using instrumented code');
 
 const server = exports.server = http.createServer((request,response)=>{
   const path = new URL(request.url, 'http://localhost/').pathname.substring(1);
@@ -48,5 +48,5 @@ const server = exports.server = http.createServer((request,response)=>{
   });
 });
 
-server.listen(8080);
+if (require.main === module) server.listen(80);
 

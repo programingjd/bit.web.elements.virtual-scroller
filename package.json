@@ -5,6 +5,7 @@
   "main": "auth.js",
   "scripts": {
     "preinstall": "npm list -g bit-bin -g || npm install bit-bin -g --unsafe-perm",
+    "instrument": "rm -rf .nyc && nyc instrument --compact=false --extension .mjs . .nyc",
     "test": "nyc instrument --compact=false --extension .mjs . .nyc && mocha test/virtual-scroller.spec.js",
     "coverage": "nyc --compact=false --extension .mjs report --reporter=text-lcov | coveralls"
   },

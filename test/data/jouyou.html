@@ -8,24 +8,25 @@
 html{width:100%;height:100%;font:24px sans-serif}
 body{width:100%;height:100%;background:#222;color:#aaa}
 virtual-scroller{max-height:100%}
-.row{display:block;height:128px;width:128px;justify-self:center}
+svg{pointer-events:none;position:absolute;left:-64px;margin-left:50%;width:128px;height:128px}
+div.char{color:rgba(0,0,0,0);font-size:100px;line-height:128px;display:flex;width:128px;height:128px;justify-self:center;align-self:center;justify-content:center;align-items:center}
+div.char::selection{background:#aaa}
 </style>
 </head>
 <body>
 <virtual-scroller>
   <template>
-    <div class="row">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-375 -375 1750 1750">
-        <defs>
-          <path/>
-        </defs>
-        <g transform="translate(0,880) scale(1,-1)">
-          <use stroke="#aaa" stroke-width="320px" stroke-linejoin="round"/>
-          <use stroke="#333" stroke-width="288px" stroke-linejoin="round"/>
-          <use fill="#ccc"/>
-        </g>
-      </svg>
-    </div>
+    <div class="char"></div>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-375 -375 1750 1750">
+      <defs>
+        <path/>
+      </defs>
+      <g transform="translate(0,880) scale(1,-1)">
+        <use stroke="#aaa" stroke-width="320px" stroke-linejoin="round"/>
+        <use stroke="#333" stroke-width="288px" stroke-linejoin="round"/>
+        <use fill="#ccc"/>
+      </g>
+    </svg>
   </template>
 </virtual-scroller>
 <script>
@@ -37,13 +38,15 @@ virtual-scroller{max-height:100%}
     count: ()=>chars.length,
     cols: ()=>Math.trunc(virtualScroller.clientWidth/180),
     render: (element, index, row, col)=>{
+      const svg=element.querySelector('svg');
+      const div=element.querySelector('div');
       const char=chars[index].code;
-      element.setAttribute("title",char);
+      div.textContent=char;
       const id=`u${char.charCodeAt(0).toString(16).padStart(4,'0')}`;
-      const path=element.querySelector('path');
+      const path=svg.querySelector('path');
       path.setAttribute('id',id);
       path.setAttribute('d',chars[index].d);
-      element.querySelectorAll('use').forEach(it=>it.setAttribute('href',`#${id}`));
+      svg.querySelectorAll('use').forEach(it=>it.setAttribute('href',`#${id}`));
     }
   };
   document.body.classList.add('loaded');

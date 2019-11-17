@@ -4,6 +4,8 @@ const fs = require('fs').promises;
 
 const delay=millis=>new Promise(resolve=>setTimeout(resolve,millis));
 
+const port = 8080;
+
 let server;
 let browser;
 
@@ -12,6 +14,7 @@ before(async function(){
   await fs.rmdir(`${__dirname}/../.nyc_output`, { recursive: true });
   await fs.mkdir(`${__dirname}/../.nyc_output`, { recursive: true });
   server = require('./serve').server;
+  server.listen(port);
   browser = await puppeteer.launch({
     args: [ '--disable-gpu', '--disable-setuid-sandbox', '--no-sandbox' ],
     dumpio: true
@@ -31,7 +34,7 @@ describe('Minimal', function(){
     page = await browser.newPage();
     await page.setViewport({ width: 600, height: 600 });
     await page.goto(
-      `http://localhost:8080/test/data/minimal.html`,
+      `http://localhost:${port}/test/data/minimal.html`,
       { timeout: 5000, waitUntil: 'networkidle0' }
     );
   });
@@ -67,7 +70,7 @@ describe('Small', function(){
     page = await browser.newPage();
     await page.setViewport({ width: 600, height: 600 });
     await page.goto(
-      `http://localhost:8080/test/data/small.html`,
+      `http://localhost:${port}/test/data/small.html`,
       { timeout: 5000, waitUntil: 'networkidle0' }
     );
   });
@@ -98,7 +101,7 @@ describe('Small with columns', function(){
     page = await browser.newPage();
     await page.setViewport({ width: 600, height: 600 });
     await page.goto(
-      `http://localhost:8080/test/data/small_cols.html`,
+      `http://localhost:${port}/test/data/small_cols.html`,
       { timeout: 5000, waitUntil: 'networkidle0' }
     );
   });
@@ -131,7 +134,7 @@ describe('Simple', function(){
     page = await browser.newPage();
     await page.setViewport({ width: 600, height: 600 });
     await page.goto(
-      `http://localhost:8080/test/data/simple.html`,
+      `http://localhost:${port}/test/data/simple.html`,
       { timeout: 5000, waitUntil: 'networkidle0' }
     );
   });
@@ -179,7 +182,7 @@ describe('Jouyou', function(){
     page = await browser.newPage();
     await page.setViewport({ width: 600, height: 600 });
     await page.goto(
-      `http://localhost:8080/test/data/jouyou.html`,
+      `http://localhost:${port}/test/data/jouyou.html`,
       { timeout: 5000, waitUntil: 'networkidle0' }
     );
   });
@@ -196,7 +199,7 @@ describe('Jouyou', function(){
   it('scrollbar', async()=>{
     assert.strictEqual(
       await page.evaluate(
-        ()=>document.elementsFromPoint(50,50).find(it=>it.tagName.toLowerCase()==='div').title
+        ()=>document.elementsFromPoint(50,50).find(it=>it.classList.contains('char')).textContent
       ),
       '人'
     );
@@ -212,7 +215,7 @@ describe('Jouyou', function(){
     assert.strictEqual(await page.evaluate(it=>it.scrollTop, element), 200);
     assert.strictEqual(
       await page.evaluate(
-        ()=>document.elementsFromPoint(50,50).find(it=>it.tagName.toLowerCase()==='div').title
+        ()=>document.elementsFromPoint(50,50).find(it=>it.classList.contains('char')).textContent
       ),
       '大'
     );
@@ -221,7 +224,7 @@ describe('Jouyou', function(){
     assert.strictEqual(await page.evaluate(it=>it.scrollTop, element), 2200);
     assert.strictEqual(
       await page.evaluate(
-        ()=>document.elementsFromPoint(50,50).find(it=>it.tagName.toLowerCase()==='div').title
+        ()=>document.elementsFromPoint(50,50).find(it=>it.classList.contains('char')).textContent
       ),
       '来'
     );
@@ -230,7 +233,7 @@ describe('Jouyou', function(){
     assert.strictEqual(await page.evaluate(it=>it.scrollTop, element), 12200);
     assert.strictEqual(
       await page.evaluate(
-        ()=>document.elementsFromPoint(50,50).find(it=>it.tagName.toLowerCase()==='div').title
+        ()=>document.elementsFromPoint(50,50).find(it=>it.classList.contains('char')).textContent
       ),
       '由'
     );
@@ -239,7 +242,7 @@ describe('Jouyou', function(){
     assert.strictEqual(await page.evaluate(it=>it.scrollTop, element), 90536);
     assert.strictEqual(
       await page.evaluate(
-        ()=>document.elementsFromPoint(50,50).find(it=>it.tagName.toLowerCase()==='div').title
+        ()=>document.elementsFromPoint(50,50).find(it=>it.classList.contains('char')).textContent
       ),
       '虞'
     );
