@@ -37,7 +37,10 @@ virtual-scroller{max-height:100%}
     count: ()=>chars.length,
     cols: ()=>Math.trunc(virtualScroller.clientWidth/180),
     render: (element, index, row, col)=>{
-      const id=`u${chars[index].code.charCodeAt(0).toString(16).padStart(4,'0')}`;
+      const char=chars[index].code;
+      element.setAttribute("title",char);
+      // element.setAttribute("title",char);
+      const id=`u${char.charCodeAt(0).toString(16).padStart(4,'0')}`;
       const path=element.querySelector('path');
       path.setAttribute('id',id);
       path.setAttribute('d',chars[index].d);
