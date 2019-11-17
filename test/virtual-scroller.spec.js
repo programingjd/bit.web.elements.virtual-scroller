@@ -27,6 +27,41 @@ after(async ()=>{
   await browser.close();
 });
 
+describe('No model', function(){
+  this.timeout(10000);
+  let page;
+  before(async()=>{
+    page = await browser.newPage();
+    await page.setViewport({ width: 600, height: 600 });
+    await page.goto(
+      `http://localhost:${port}/test/data/nomodel.html`,
+      { timeout: 5000, waitUntil: 'networkidle0' }
+    );
+  });
+  after(async()=>{
+    const coverage = await page.evaluate(()=>window.__coverage__);
+    if(coverage) await fs.writeFile(`${__dirname}/../.nyc_output/nomodel.json`, JSON.stringify(coverage));
+    await page.close();
+  });
+  it('page loaded',async ()=>{
+    assert.strictEqual(await page.title(), 'No model');
+    const body = await page.$('body');
+    assert.strictEqual(await page.evaluate(it=>it.classList.contains('loaded'),body), true);
+  });
+  it('scrollbar', async()=>{
+    const element = await page.$('virtual-scroller');
+    assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),false);
+  });
+  it('set model', async ()=>{
+    const element = await page.$('virtual-scroller');
+    await page.evaluate(it=>it.model={},element);
+    assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),false);
+    await page.evaluate(it=>it.model={count:100},element);
+    assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),true);
+    await page.evaluate(it=>it.model={count:100,cols:10},element);
+    assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),false);
+  });
+});
 describe('Minimal', function(){
   this.timeout(10000);
   let page;
@@ -175,16 +210,21 @@ describe('Simple', function(){
   });
   it('set model', async ()=>{
     const element = await page.$('virtual-scroller');
+    assert.strictEqual(await page.evaluate(it=>it.model.count,element), 10000);
     await page.evaluate(it=>{model.count=2;it.model=model},element);
+    assert.strictEqual(await page.evaluate(it=>it.model.count,element), 2);
     assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),false);
     await page.evaluate(it=>{model.count=200;it.model=model},element);
+    assert.strictEqual(await page.evaluate(it=>it.model.count,element), 200);
     assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),true);
     await page.evaluate(it=>{model.count=0;it.model=model},element);
+    assert.strictEqual(await page.evaluate(it=>it.model.count,element), 0);
     assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),false);
   });
   it('resize', async ()=>{
     const element = await page.$('virtual-scroller');
     await page.evaluate(it=>{model.count=100;it.model=model},element);
+    assert.strictEqual(await page.evaluate(it=>it.model.count,element), 100);
     assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),true);
     await page.evaluate(()=>document.body.style.height='4000px');
     assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),false);
