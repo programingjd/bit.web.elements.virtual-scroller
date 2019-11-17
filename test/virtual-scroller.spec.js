@@ -60,6 +60,8 @@ describe('No model', function(){
     assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),true);
     await page.evaluate(it=>it.model={count:100,cols:10},element);
     assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),false);
+    await page.evaluate(it=>it.model={count:100,cols:10,render:el=>el.textContent='+'},element);
+    assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),false);
   });
 });
 describe('Minimal', function(){
