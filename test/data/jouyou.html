@@ -14,7 +14,12 @@ div.char::selection{background:#aaa}
 </style>
 </head>
 <body>
-<virtual-scroller>
+<script>
+(async()=>{
+  await import('/virtual-scroller.mjs');
+  const chars=await (await fetch('jouyou.json')).json();
+  const virtualScroller=document.createElement('virtual-scroller');
+  virtualScroller.innerHTML=`
   <template>
     <div class="char"></div>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="-375 -375 1750 1750">
@@ -27,13 +32,7 @@ div.char::selection{background:#aaa}
         <use fill="#ccc"/>
       </g>
     </svg>
-  </template>
-</virtual-scroller>
-<script>
-(async()=>{
-  await import('/virtual-scroller.mjs');
-  const chars=await (await fetch('jouyou.json')).json();
-  const virtualScroller=document.querySelector('virtual-scroller');
+  </template>`;
   virtualScroller.model={
     count: ()=>chars.length,
     cols: ()=>Math.trunc(virtualScroller.clientWidth/180),
@@ -49,6 +48,7 @@ div.char::selection{background:#aaa}
       svg.querySelectorAll('use').forEach(it=>it.setAttribute('href',`#${id}`));
     }
   };
+  document.body.appendChild(virtualScroller);
   document.body.classList.add('loaded');
 })();
 </script>

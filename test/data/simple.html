@@ -18,16 +18,17 @@ virtual-scroller{max-height:100%}
   </template>
 </virtual-scroller>
 <script>
+const model={
+  count: 10000,
+  cols: 2,
+  render: (element, index, row, col)=>{
+     element.textContent=JSON.stringify({index:index,row:row,col:col});
+  }
+};
 (async()=>{
   await import('/virtual-scroller.mjs');
   const virtualScroller=document.querySelector('virtual-scroller');
-  virtualScroller.model={
-    count: 10000,
-    cols: 2,
-    render: (element, index, row, col)=>{
-      element.textContent=JSON.stringify({index:index,row:row,col:col});
-    }
-  };
+  virtualScroller.model=model;
   document.body.classList.add('loaded');
 })();
 </script>
