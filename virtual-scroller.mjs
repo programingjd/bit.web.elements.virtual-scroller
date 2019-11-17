@@ -31,7 +31,7 @@ connectedCallback(){
   }
   if(this._model) this._layout();
   this.shadowRoot.host.addEventListener('scroll',this._render.bind(this));
-  new ResizeObserver(_=>{
+  if(window.ResizeObserver) new ResizeObserver(_=>{
     const height=this.clientHeight;
     if(Math.abs(height-this._height)>this._rowHeight) this._layout();
   }).observe(this);
