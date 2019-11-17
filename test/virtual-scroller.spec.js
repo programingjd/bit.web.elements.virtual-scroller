@@ -8,10 +8,11 @@ const delay=millis=>new Promise(resolve=>setTimeout(resolve,millis));
 let server;
 let browser;
 
-before(async()=>{
+before(async function(){
+  this.timeout(10000);
   server = require('./serve').server;
   browser = await puppeteer.launch({
-    args: [ '--disable-setuid-sandbox', '--no-sandbox' ],
+    args: [ '--disable-gpu', '--disable-setuid-sandbox', '--no-sandbox' ],
     dumpio: true
   });
   console.log(browser);
