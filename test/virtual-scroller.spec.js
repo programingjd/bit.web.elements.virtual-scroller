@@ -1,5 +1,4 @@
 const assert = require('assert');
-const http = require('http');
 const puppeteer = require('puppeteer');
 const fs = require('fs').promises;
 
