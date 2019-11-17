@@ -1,5 +1,5 @@
 const http = require('http');
-const fs = require('fs').promises;
+const fs = require('fs');
 
 const contentTypes = new Map([
   [ "html", "text/html" ],
@@ -8,6 +8,15 @@ const contentTypes = new Map([
   [ "json", "application/json" ]
 ]);
 
+const nyc = (()=>{
+  try{
+    return !!fs.statSync(`${__dirname}/../.nyc/virtual-scroller.mjs`);
+  }catch(_){
+    return false;
+  }
+})();
+
+console.log(nyc);
 
 const server = exports.server = http.createServer((request,response)=>{
   const path = new URL(request.url, 'http://localhost/').pathname.substring(1);
@@ -23,12 +32,13 @@ const server = exports.server = http.createServer((request,response)=>{
     response.end();
     return;
   }
-  fs.stat(`${__dirname}/../${path}`).then(it=>{
+  const p = `${__dirname}/../${nyc&&request.url==='/virtual-scroller.mjs'?'.nyc/virtual-scroller.mjs':path}`;
+  fs.promises.stat(p).then(it=>{
       response.writeHead(200,{
         "Content-Type":contentType,
         "Cache-Control":"no-cache"
       });
-      fs.readFile(`${__dirname}/../${path}`).then(it=>{
+      fs.promises.readFile(p).then(it=>{
         response.end(it);
       });
     }

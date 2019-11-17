@@ -10,6 +10,8 @@ let browser;
 
 before(async function(){
   this.timeout(10000);
+  await fs.rmdir(`${__dirname}/../.nyc_output`, { recursive: true });
+  await fs.mkdir(`${__dirname}/../.nyc_output`, { recursive: true });
   server = require('./serve').server;
   browser = await puppeteer.launch({
     args: [ '--disable-gpu', '--disable-setuid-sandbox', '--no-sandbox' ],
@@ -35,6 +37,8 @@ describe('Minimal', function(){
     );
   });
   after(async()=>{
+    const coverage = await page.evaluate(()=>window.__coverage__);
+    if(coverage) await fs.writeFile(`${__dirname}/../.nyc_output/minimal.json`, JSON.stringify(coverage));
     await page.close();
   });
   it('page loaded',async ()=>{
@@ -69,6 +73,8 @@ describe('Small', function(){
     );
   });
   after(async()=>{
+    const coverage = await page.evaluate(()=>window.__coverage__);
+    if(coverage) await fs.writeFile(`${__dirname}/../.nyc_output/small.json`, JSON.stringify(coverage));
     await page.close();
   });
   it('page loaded',async ()=>{
@@ -98,6 +104,8 @@ describe('Small with columns', function(){
     );
   });
   after(async()=>{
+    const coverage = await page.evaluate(()=>window.__coverage__);
+    if(coverage) await fs.writeFile(`${__dirname}/../.nyc_output/small_cols.json`, JSON.stringify(coverage));
     await page.close();
   });
   it('page loaded',async ()=>{
@@ -129,6 +137,8 @@ describe('Simple', function(){
     );
   });
   after(async()=>{
+    const coverage = await page.evaluate(()=>window.__coverage__);
+    if(coverage) await fs.writeFile(`${__dirname}/../.nyc_output/simple.json`, JSON.stringify(coverage));
     await page.close();
   });
   it('page loaded',async ()=>{
@@ -175,6 +185,8 @@ describe('Jouyou', function(){
     );
   });
   after(async()=>{
+    const coverage = await page.evaluate(()=>window.__coverage__);
+    if(coverage) await fs.writeFile(`${__dirname}/../.nyc_output/jouyou.json`, JSON.stringify(coverage));
     await page.close();
   });
   it('page loaded',async ()=>{
