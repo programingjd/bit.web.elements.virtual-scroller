@@ -179,6 +179,8 @@ describe('Simple', function(){
     assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),false);
     await page.evaluate(it=>{model.count=200;it.model=model},element);
     assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),true);
+    await page.evaluate(it=>{model.count=0;it.model=model},element);
+    assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),false);
   });
   it('resize', async ()=>{
     const element = await page.$('virtual-scroller');
@@ -186,6 +188,8 @@ describe('Simple', function(){
     assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),true);
     await page.evaluate(()=>document.body.style.height='4000px');
     assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),false);
+    await page.evaluate(()=>document.body.style.height='600px');
+    assert.strictEqual(await page.evaluate(it=>it.offsetHeight<it.scrollHeight,element),true);
   });
 });
 

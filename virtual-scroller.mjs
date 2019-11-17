@@ -52,6 +52,7 @@ _layout(){
   console.log('layout');
   const count=this._count();
   if(count===0){
+    this._placeholder.style.height='0px';
     while(this._clones.length>0) this._removeRow();
     return;
   }
